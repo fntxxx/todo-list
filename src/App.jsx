@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+//App.jsx
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import AuthPage from "./pages/Auth";
 
 function App() {
   return (
-    <Router basename="/todo-list">
+    <Router>
       <Routes>
         <Route path="/auth/:type" element={<AuthPage />} />
         <Route path="*" element={<div>404 Not Found</div>} />
