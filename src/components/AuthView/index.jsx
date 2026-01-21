@@ -1,14 +1,21 @@
-//components/AuthView/index.jsx
+// components/AuthView/index.jsx
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import styles from "./style.module.scss";
 import logoImg from "../../assets/images/logo.svg";
 import heroImg from "../../assets/images/hero.png";
 
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
+import { useAuthPage } from "../../pages/Auth/AuthContext";
 
 export default function AuthView({ mode }) {
     const isSignIn = mode === "signin";
+    const { setError } = useAuthPage();
+
+    useEffect(() => {
+        setError("");
+    }, [mode, setError]);
 
     return (
         <div className={styles.container}>

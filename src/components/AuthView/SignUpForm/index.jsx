@@ -1,13 +1,28 @@
-//components/AuthView/SignUpForm/index.jsx
+// components/AuthView/SignUpForm/index.jsx
+import { useState } from "react";
 import styles from "./style.module.scss";
+import { useAuthPage } from "../../../pages/Auth/AuthContext";
 
 export default function SignUpForm() {
+    const { loading, error, setError, signUpAction } = useAuthPage();
+
+    const [email, setEmail] = useState("");
+    const [nickname, setNickname] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        await signUpAction({ email, nickname, password, confirmPassword });
+    };
+
     return (
         <>
             <h2 className={styles.title}>註冊帳號</h2>
 
-            <form className={styles.form}>
-                <fieldset className={styles.fieldset}>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <fieldset className={styles.fieldset} disabled={loading}>
                     <div className={styles.field}>
                         <label htmlFor="email" className={styles.label}>
                             Email
@@ -17,6 +32,11 @@ export default function SignUpForm() {
                             id="email"
                             placeholder="請輸入 Email"
                             className={styles.inputEmail}
+                            value={email}
+                            onChange={(e) => {
+                                setError("");
+                                setEmail(e.target.value);
+                            }}
                             required
                         />
                     </div>
@@ -30,6 +50,11 @@ export default function SignUpForm() {
                             id="nickname"
                             placeholder="請輸入暱稱"
                             className={styles.input}
+                            value={nickname}
+                            onChange={(e) => {
+                                setError("");
+                                setNickname(e.target.value);
+                            }}
                             required
                         />
                     </div>
@@ -43,6 +68,11 @@ export default function SignUpForm() {
                             id="password"
                             placeholder="請輸入密碼"
                             className={styles.input}
+                            value={password}
+                            onChange={(e) => {
+                                setError("");
+                                setPassword(e.target.value);
+                            }}
                             required
                         />
                     </div>
@@ -56,16 +86,24 @@ export default function SignUpForm() {
                             id="confirmPassword"
                             placeholder="請再次輸入密碼"
                             className={styles.input}
+                            value={confirmPassword}
+                            onChange={(e) => {
+                                setError("");
+                                setConfirmPassword(e.target.value);
+                            }}
                             required
                         />
                     </div>
+
+                    {error && <p className={styles.error}>{error}</p>}
                 </fieldset>
 
                 <button
                     type="submit"
                     className={styles.button}
+                    disabled={loading}
                 >
-                    註冊帳號
+                    {loading ? "註冊中..." : "註冊帳號"}
                 </button>
             </form>
         </>

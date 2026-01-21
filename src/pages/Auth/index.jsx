@@ -1,9 +1,13 @@
-//pages/Auth/index.jsx
-import { useParams, Link } from "react-router-dom";
+// pages/Auth/index.jsx
+import { useParams } from "react-router-dom";
 import AuthView from "../../components/AuthView";
+import { AuthPageProvider } from "./AuthContext";
 
 export default function AuthPage() {
-    const { type } = useParams(); // type = "signin" 或 "signup"
-
-    return <AuthView mode={type} />;
+    const { type } = useParams();
+    return (
+        <AuthPageProvider>
+            <AuthView mode={type} />
+        </AuthPageProvider>
+    );
 }
