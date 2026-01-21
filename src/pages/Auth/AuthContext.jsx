@@ -8,7 +8,7 @@ const AuthPageContext = createContext(null);
 
 export function AuthPageProvider({ children }) {
     const navigate = useNavigate();
-    const { setAuthStatus } = useAuth(); // ✅ 取全站狀態 setter
+    const { setAuthStatus, setUser } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -21,12 +21,17 @@ export function AuthPageProvider({ children }) {
             const res = await signIn({ email, password });
 
             const token = res.data?.token;
+            const nickname = res.data?.nickname;
             if (!token) throw new Error("登入失敗");
 
             localStorage.setItem("token", token);
 
             // ✅ 立刻把全站狀態切成已登入（不用重整）
             setAuthStatus("authed");
+            setUser({
+                uid: null,
+                nickname: nickname ?? "",
+            });
 
             navigate("/todo");
             return true;
