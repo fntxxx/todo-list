@@ -2,7 +2,6 @@
 @use 'modern-css-reset' as *;
 @use "./variables" as *;
 @use "./mixins" as *;
-@use "./typography" as *;
 
 *,
 *::before,
@@ -37,6 +36,14 @@ button {
     padding: 0;
     border: 0;
     cursor: pointer;
+    background-color: transparent;
+    color: inherit;
+}
+
+fieldset,
+input {
+    padding: 0;
+    border: 0;
     background-color: transparent;
     color: inherit;
 }

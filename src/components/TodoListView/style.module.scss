@@ -1,0 +1,33 @@
+// components/TodoListView/style.module.scss
+
+.container {
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.nickname {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.signOutButton {
+    background: transparent;
+    border: 1px solid #333;
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+}
+
+.main {
+    text-align: center;
+}
+
+.placeholder {
+    color: #666;
+}
