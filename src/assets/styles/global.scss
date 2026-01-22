@@ -13,6 +13,7 @@ body {
     font-family: $font-family-base;
     line-height: 1;
     letter-spacing: 0;
+    color: $color-secondary;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -46,4 +47,11 @@ input {
     border: 0;
     background-color: transparent;
     color: inherit;
+}
+
+ul,
+ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
