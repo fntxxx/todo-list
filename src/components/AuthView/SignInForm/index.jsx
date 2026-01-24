@@ -28,6 +28,8 @@ export default function SignInForm() {
                         <input
                             type="email"
                             id="email"
+                            name="email"
+                            autoComplete="email"
                             placeholder="請輸入 Email"
                             className={styles.inputEmail}
                             value={email}
@@ -46,6 +48,8 @@ export default function SignInForm() {
                         <input
                             type="password"
                             id="password"
+                            name="password"
+                            autoComplete="current-password"
                             placeholder="請輸入密碼"
                             className={styles.input}
                             value={password}

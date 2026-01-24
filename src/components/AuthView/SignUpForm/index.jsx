@@ -30,6 +30,8 @@ export default function SignUpForm() {
                         <input
                             type="email"
                             id="email"
+                            name="email"
+                            autoComplete="email"
                             placeholder="請輸入 Email"
                             className={styles.inputEmail}
                             value={email}
@@ -48,6 +50,8 @@ export default function SignUpForm() {
                         <input
                             type="text"
                             id="nickname"
+                            name="nickname"
+                            autoComplete="off"
                             placeholder="請輸入暱稱"
                             className={styles.input}
                             value={nickname}
@@ -66,6 +70,8 @@ export default function SignUpForm() {
                         <input
                             type="password"
                             id="password"
+                            name="new-password"
+                            autoComplete="new-password"
                             placeholder="請輸入密碼"
                             className={styles.input}
                             value={password}
@@ -84,6 +90,8 @@ export default function SignUpForm() {
                         <input
                             type="password"
                             id="confirmPassword"
+                            name="new-password-confirm"
+                            autoComplete="new-password"
                             placeholder="請再次輸入密碼"
                             className={styles.input}
                             value={confirmPassword}
