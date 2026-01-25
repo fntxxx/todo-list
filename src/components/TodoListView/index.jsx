@@ -20,6 +20,7 @@ export default function TodoListView({ nickname, onSignOut }) {
         setFilter,
         todos,
         loading,
+        createLoading,
         error,
         refreshTodos,
         remainingCount,
@@ -32,7 +33,6 @@ export default function TodoListView({ nickname, onSignOut }) {
 
     // 新增用
     const [newContent, setNewContent] = useState("");
-    const [isCreating, setIsCreating] = useState(false);
 
     // 編輯用
     const [editingId, setEditingId] = useState(null);
@@ -46,19 +46,14 @@ export default function TodoListView({ nickname, onSignOut }) {
 
         const content = newContent.trim();
         if (!content) return;
-        if (isCreating) return;
+        if (createLoading) return;
 
         setNewContent("");
-        setIsCreating(true);
 
-        try {
-            const ok = await addTodo(content);
+        const ok = await addTodo(content);
 
-            if (!ok) {
-                setNewContent(content);
-            }
-        } finally {
-            setIsCreating(false);
+        if (!ok) {
+            setNewContent(content);
         }
     };
 
@@ -111,12 +106,12 @@ export default function TodoListView({ nickname, onSignOut }) {
                         className={styles.input}
                         value={newContent}
                         onChange={(e) => setNewContent(e.target.value)}
-                        disabled={isCreating}
+                        disabled={createLoading}
                     />
                     <button
                         type="submit"
                         className={styles.addButton}
-                        disabled={isCreating}
+                        disabled={createLoading}
                     >
                         <img src={addImg} alt="" />
                     </button>
