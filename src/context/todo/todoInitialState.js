@@ -13,5 +13,7 @@ export const initialState = {
     createLoading: false,
     mutateLoading: false,
 
-    error: "",
+    fetchError: "",
+    createError: "",
+    mutateError: "",
 };

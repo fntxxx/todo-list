@@ -8,46 +8,56 @@ export function todoReducer(state, action) {
             return { ...initialState };
 
         case TODO_ACTIONS.ERROR_CLEAR:
-            return { ...state, error: "" };
+            return { ...state, fetchError: "", createError: "", mutateError: "" };
+
+        case TODO_ACTIONS.FETCH_ERROR_CLEAR:
+            return { ...state, fetchError: "" };
+
+        case TODO_ACTIONS.CREATE_ERROR_CLEAR:
+            return { ...state, createError: "" };
+
+        case TODO_ACTIONS.MUTATE_ERROR_CLEAR:
+            return { ...state, mutateError: "" };
 
         case TODO_ACTIONS.FILTER_SET:
             return { ...state, filter: action.payload };
 
         // --------- FETCH ---------
         case TODO_ACTIONS.FETCH_REQUEST_START:
-            return { ...state, fetchLoading: true, error: "" };
+            return { ...state, fetchLoading: true, fetchError: "" };
 
         case TODO_ACTIONS.FETCH_SUCCESS:
             return {
                 ...state,
                 fetchLoading: false,
                 todos: action.payload ?? [],
+                fetchError: "",
             };
 
         case TODO_ACTIONS.FETCH_FAIL:
             return {
                 ...state,
                 fetchLoading: false,
-                error: action.payload || "載入代辦清單失敗",
+                fetchError: action.payload || "載入代辦清單失敗",
             };
 
         // --------- CREATE request state ---------
         case TODO_ACTIONS.CREATE_REQUEST_START:
-            return { ...state, createLoading: true, error: "" };
+            return { ...state, createLoading: true, createError: "" };
 
         case TODO_ACTIONS.CREATE_REQUEST_END:
             return { ...state, createLoading: false };
 
         // --------- MUTATE request state (delete/toggle/edit) ---------
         case TODO_ACTIONS.MUTATE_REQUEST_START:
-            return { ...state, mutateLoading: true, error: "" };
+            return { ...state, mutateLoading: true, mutateError: "" };
 
         case TODO_ACTIONS.MUTATE_REQUEST_END:
             return { ...state, mutateLoading: false };
 
         // --------- CREATE (optimistic) ---------
         case TODO_ACTIONS.CREATE_OPTIMISTIC_ADD:
-            return { ...state, error: "", todos: [...state.todos, action.payload] };
+            return { ...state, createError: "", todos: [...state.todos, action.payload] };
 
         case TODO_ACTIONS.CREATE_OPTIMISTIC_COMMIT: {
             const { tempId, created } = action.payload;
@@ -61,7 +71,7 @@ export function todoReducer(state, action) {
             const { tempId, message } = action.payload;
             return {
                 ...state,
-                error: message || "新增失敗",
+                createError: message || "新增失敗",
                 todos: state.todos.filter((t) => t.id !== tempId),
             };
         }
@@ -70,20 +80,20 @@ export function todoReducer(state, action) {
         case TODO_ACTIONS.DELETE_OPTIMISTIC_REMOVE:
             return {
                 ...state,
-                error: "",
+                mutateError: "",
                 todos: state.todos.filter((t) => t.id !== action.payload),
             };
 
         case TODO_ACTIONS.DELETE_OPTIMISTIC_ROLLBACK: {
             const { snapshot, message } = action.payload;
-            return { ...state, error: message || "刪除失敗", todos: snapshot };
+            return { ...state, mutateError: message || "刪除失敗", todos: snapshot };
         }
 
         // --------- TOGGLE (optimistic) ---------
         case TODO_ACTIONS.TOGGLE_OPTIMISTIC_FLIP:
             return {
                 ...state,
-                error: "",
+                mutateError: "",
                 todos: state.todos.map((t) =>
                     t.id === action.payload ? { ...t, status: !t.status } : t
                 ),
@@ -91,7 +101,7 @@ export function todoReducer(state, action) {
 
         case TODO_ACTIONS.TOGGLE_OPTIMISTIC_ROLLBACK: {
             const { snapshot, message } = action.payload;
-            return { ...state, error: message || "切換狀態失敗", todos: snapshot };
+            return { ...state, mutateError: message || "切換狀態失敗", todos: snapshot };
         }
 
         // --------- EDIT (optimistic) ---------
@@ -99,14 +109,14 @@ export function todoReducer(state, action) {
             const { id, content } = action.payload;
             return {
                 ...state,
-                error: "",
+                mutateError: "",
                 todos: state.todos.map((t) => (t.id === id ? { ...t, content } : t)),
             };
         }
 
         case TODO_ACTIONS.EDIT_OPTIMISTIC_ROLLBACK: {
             const { snapshot, message } = action.payload;
-            return { ...state, error: message || "更新內容失敗", todos: snapshot };
+            return { ...state, mutateError: message || "更新內容失敗", todos: snapshot };
         }
 
         default:

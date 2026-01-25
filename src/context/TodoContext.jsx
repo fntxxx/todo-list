@@ -12,7 +12,7 @@ import { useAuth } from "./AuthContext";
 import { FILTERS, initialState } from "./todo/todoInitialState";
 import { TODO_ACTIONS } from "./todo/todoTypes";
 import { todoReducer } from "./todo/todoReducer";
-import { selectFilteredTodos } from "./todo/todoSelectors";
+import { selectFilteredTodos, selectLegacyError } from "./todo/todoSelectors";
 
 const TodoContext = createContext(null);
 
@@ -25,6 +25,10 @@ export function TodoProvider({ children }) {
     const filteredTodos = useMemo(() => {
         return selectFilteredTodos(state.todos, state.filter);
     }, [state.todos, state.filter]);
+
+    const legacyError = useMemo(() => {
+        return selectLegacyError(state);
+    }, [state.fetchError, state.mutateError, state.createError]);
 
     const refreshTodos = async () => {
         dispatch({ type: TODO_ACTIONS.FETCH_REQUEST_START });
@@ -202,7 +206,7 @@ export function TodoProvider({ children }) {
             createLoading: state.createLoading,
             mutateLoading: state.mutateLoading,
 
-            error: state.error,
+            error: legacyError,
 
             // actions
             setFilter,
@@ -220,7 +224,7 @@ export function TodoProvider({ children }) {
             state.fetchLoading,
             state.createLoading,
             state.mutateLoading,
-            state.error,
+            legacyError,
             filteredTodos,
         ]
     );
