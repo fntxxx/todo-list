@@ -13,16 +13,16 @@ const initialState = {
 
 function authPageReducer(state, action) {
     switch (action.type) {
-        case "CLEAR_ERROR":
+        case "ERROR/CLEAR":
             return { ...state, error: "" };
 
-        case "SET_ERROR":
+        case "ERROR/SET":
             return { ...state, error: action.payload || "" };
 
-        case "SUBMIT_START":
+        case "AUTH/SUBMIT/REQUEST_START":
             return { ...state, loading: true, error: "" };
 
-        case "SUBMIT_END":
+        case "AUTH/SUBMIT/REQUEST_END":
             return { ...state, loading: false };
 
         default:
@@ -37,16 +37,16 @@ export function AuthPageProvider({ children }) {
     const [state, dispatch] = useReducer(authPageReducer, initialState);
 
     const setError = (message) => {
-        dispatch({ type: "SET_ERROR", payload: message });
+        dispatch({ type: "ERROR/SET", payload: message });
     };
 
     const clearError = () => {
-        dispatch({ type: "CLEAR_ERROR" });
+        dispatch({ type: "ERROR/CLEAR" });
     };
 
     const signInAction = async ({ email, password }) => {
         clearError();
-        dispatch({ type: "SUBMIT_START" });
+        dispatch({ type: "AUTH/SUBMIT/REQUEST_START" });
 
         try {
             const res = await signIn({ email, password });
@@ -70,7 +70,7 @@ export function AuthPageProvider({ children }) {
             setError(err.response?.data?.message || "登入失敗，請確認帳號密碼");
             return false;
         } finally {
-            dispatch({ type: "SUBMIT_END" });
+            dispatch({ type: "AUTH/SUBMIT/REQUEST_END" });
         }
     };
 
@@ -82,7 +82,7 @@ export function AuthPageProvider({ children }) {
             return false;
         }
 
-        dispatch({ type: "SUBMIT_START" });
+        dispatch({ type: "AUTH/SUBMIT/REQUEST_START" });
 
         try {
             const res = await signUp({ email, nickname, password });
@@ -95,7 +95,7 @@ export function AuthPageProvider({ children }) {
             setError(err.response?.data?.message || "註冊失敗，請稍後再試");
             return false;
         } finally {
-            dispatch({ type: "SUBMIT_END" });
+            dispatch({ type: "AUTH/SUBMIT/REQUEST_END" });
         }
     };
 

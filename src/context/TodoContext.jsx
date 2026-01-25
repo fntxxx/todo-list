@@ -26,29 +26,29 @@ const initialState = {
 
 function todoReducer(state, action) {
     switch (action.type) {
-        case "RESET":
+        case "STATE/RESET":
             return { ...initialState };
 
-        case "CLEAR_ERROR":
+        case "ERROR/CLEAR":
             return { ...state, error: "" };
 
-        case "SET_FILTER":
+        case "TODO/FILTER/SET":
             return { ...state, filter: action.payload };
 
-        case "FETCH_START":
+        case "TODO/FETCH/REQUEST_START":
             return { ...state, loading: true, error: "" };
 
-        case "FETCH_SUCCESS":
+        case "TODO/FETCH/SUCCESS":
             return { ...state, loading: false, todos: action.payload ?? [] };
 
-        case "FETCH_ERROR":
+        case "TODO/FETCH/FAIL":
             return { ...state, loading: false, error: action.payload || "載入代辦清單失敗" };
 
         // --------- CREATE (optimistic) ---------
-        case "CREATE_OPTIMISTIC":
+        case "TODO/CREATE/OPTIMISTIC_ADD":
             return { ...state, error: "", todos: [...state.todos, action.payload] };
 
-        case "CREATE_COMMIT": {
+        case "TODO/CREATE/OPTIMISTIC_COMMIT": {
             const { tempId, created } = action.payload;
             return {
                 ...state,
@@ -56,7 +56,7 @@ function todoReducer(state, action) {
             };
         }
 
-        case "CREATE_ROLLBACK": {
+        case "TODO/CREATE/OPTIMISTIC_ROLLBACK": {
             const { tempId, message } = action.payload;
             return {
                 ...state,
@@ -66,16 +66,16 @@ function todoReducer(state, action) {
         }
 
         // --------- DELETE (optimistic) ---------
-        case "DELETE_OPTIMISTIC":
+        case "TODO/DELETE/OPTIMISTIC_REMOVE":
             return { ...state, error: "", todos: state.todos.filter((t) => t.id !== action.payload) };
 
-        case "DELETE_ROLLBACK": {
+        case "TODO/DELETE/OPTIMISTIC_ROLLBACK": {
             const { snapshot, message } = action.payload;
             return { ...state, error: message || "刪除失敗", todos: snapshot };
         }
 
         // --------- TOGGLE (optimistic) ---------
-        case "TOGGLE_OPTIMISTIC":
+        case "TODO/TOGGLE/OPTIMISTIC_FLIP":
             return {
                 ...state,
                 error: "",
@@ -84,13 +84,13 @@ function todoReducer(state, action) {
                 ),
             };
 
-        case "TOGGLE_ROLLBACK": {
+        case "TODO/TOGGLE/OPTIMISTIC_ROLLBACK": {
             const { snapshot, message } = action.payload;
             return { ...state, error: message || "切換狀態失敗", todos: snapshot };
         }
 
         // --------- EDIT (optimistic) ---------
-        case "EDIT_OPTIMISTIC": {
+        case "TODO/EDIT/OPTIMISTIC_UPDATE": {
             const { id, content } = action.payload;
             return {
                 ...state,
@@ -99,7 +99,7 @@ function todoReducer(state, action) {
             };
         }
 
-        case "EDIT_ROLLBACK": {
+        case "TODO/EDIT/OPTIMISTIC_ROLLBACK": {
             const { snapshot, message } = action.payload;
             return { ...state, error: message || "更新內容失敗", todos: snapshot };
         }
@@ -121,15 +121,15 @@ export function TodoProvider({ children }) {
     }, [state.todos, state.filter]);
 
     const refreshTodos = async () => {
-        dispatch({ type: "FETCH_START" });
+        dispatch({ type: "TODO/FETCH/REQUEST_START" });
 
         try {
             const res = await getTodos();
-            dispatch({ type: "FETCH_SUCCESS", payload: res.data?.data ?? [] });
+            dispatch({ type: "TODO/FETCH/SUCCESS", payload: res.data?.data ?? [] });
             return true;
         } catch (err) {
             dispatch({
-                type: "FETCH_ERROR",
+                type: "TODO/FETCH/FAIL",
                 payload: err.response?.data?.message || "載入代辦清單失敗",
             });
             return false;
@@ -141,7 +141,7 @@ export function TodoProvider({ children }) {
         if (isChecking) return;
 
         if (!isAuthed) {
-            dispatch({ type: "RESET" });
+            dispatch({ type: "STATE/RESET" });
             return;
         }
 
@@ -165,14 +165,14 @@ export function TodoProvider({ children }) {
             __temp: true,
         };
 
-        dispatch({ type: "CREATE_OPTIMISTIC", payload: tempTodo });
+        dispatch({ type: "TODO/CREATE/OPTIMISTIC_ADD", payload: tempTodo });
 
         try {
             const res = await createTodo(trimmed);
             const created = res.data?.data;
 
             if (created?.id) {
-                dispatch({ type: "CREATE_COMMIT", payload: { tempId, created } });
+                dispatch({ type: "TODO/CREATE/OPTIMISTIC_COMMIT", payload: { tempId, created } });
             } else {
                 // 後端沒回完整 todo → 直接重載一次，避免 UI 與伺服器不一致
                 await refreshTodos();
@@ -181,7 +181,7 @@ export function TodoProvider({ children }) {
             return true;
         } catch (err) {
             dispatch({
-                type: "CREATE_ROLLBACK",
+                type: "TODO/CREATE/OPTIMISTIC_ROLLBACK",
                 payload: {
                     tempId,
                     message: err.response?.data?.message || "新增失敗",
@@ -194,14 +194,14 @@ export function TodoProvider({ children }) {
     const removeTodo = async (id) => {
         const snapshot = state.todos;
 
-        dispatch({ type: "DELETE_OPTIMISTIC", payload: id });
+        dispatch({ type: "TODO/DELETE/OPTIMISTIC_REMOVE", payload: id });
 
         try {
             await deleteTodo(id);
             return true;
         } catch (err) {
             dispatch({
-                type: "DELETE_ROLLBACK",
+                type: "TODO/DELETE/OPTIMISTIC_ROLLBACK",
                 payload: {
                     snapshot,
                     message: err.response?.data?.message || "刪除失敗",
@@ -214,14 +214,14 @@ export function TodoProvider({ children }) {
     const toggleTodoStatus = async (id) => {
         const snapshot = state.todos;
 
-        dispatch({ type: "TOGGLE_OPTIMISTIC", payload: id });
+        dispatch({ type: "TODO/TOGGLE/OPTIMISTIC_FLIP", payload: id });
 
         try {
             await toggleTodo(id);
             return true;
         } catch (err) {
             dispatch({
-                type: "TOGGLE_ROLLBACK",
+                type: "TODO/TOGGLE/OPTIMISTIC_ROLLBACK",
                 payload: {
                     snapshot,
                     message: err.response?.data?.message || "切換狀態失敗",
@@ -237,14 +237,14 @@ export function TodoProvider({ children }) {
 
         const snapshot = state.todos;
 
-        dispatch({ type: "EDIT_OPTIMISTIC", payload: { id, content: trimmed } });
+        dispatch({ type: "TODO/EDIT/OPTIMISTIC_UPDATE", payload: { id, content: trimmed } });
 
         try {
             await updateTodo(id, trimmed);
             return true;
         } catch (err) {
             dispatch({
-                type: "EDIT_ROLLBACK",
+                type: "TODO/EDIT/OPTIMISTIC_ROLLBACK",
                 payload: {
                     snapshot,
                     message: err.response?.data?.message || "更新內容失敗",
@@ -255,7 +255,7 @@ export function TodoProvider({ children }) {
     };
 
     const setFilter = (next) => {
-        dispatch({ type: "SET_FILTER", payload: next });
+        dispatch({ type: "TODO/FILTER/SET", payload: next });
     };
 
     const value = useMemo(
@@ -275,7 +275,7 @@ export function TodoProvider({ children }) {
             toggleTodoStatus,
             editTodoContent,
 
-            clearError: () => dispatch({ type: "CLEAR_ERROR" }),
+            clearError: () => dispatch({ type: "ERROR/CLEAR" }),
         }),
         [state.todos, state.filter, state.loading, state.error, filteredTodos]
     );
