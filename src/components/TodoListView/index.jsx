@@ -21,6 +21,7 @@ export default function TodoListView({ nickname, onSignOut }) {
         todos,
         loading,
         createLoading,
+        mutateLoading,
         error,
         refreshTodos,
         remainingCount,
@@ -41,7 +42,6 @@ export default function TodoListView({ nickname, onSignOut }) {
     /* ---------- handlers ---------- */
 
     const handleCreate = async (e) => {
-
         e.preventDefault();
 
         const content = newContent.trim();
@@ -58,6 +58,7 @@ export default function TodoListView({ nickname, onSignOut }) {
     };
 
     const startEdit = (todo) => {
+        if (mutateLoading) return;
         setEditingId(todo.id);
         setEditingValue(todo.content);
     };
@@ -69,6 +70,7 @@ export default function TodoListView({ nickname, onSignOut }) {
 
     const commitEdit = async () => {
         if (!editingId) return;
+        if (mutateLoading) return;
         const ok = await editTodoContent(editingId, editingValue);
         if (ok) cancelEdit();
     };
@@ -192,6 +194,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                     type="checkbox"
                                                     className={styles.checkboxInput}
                                                     checked={isDone}
+                                                    disabled={mutateLoading}
                                                     onChange={() => toggleTodoStatus(t.id)}
                                                 />
 
@@ -207,11 +210,13 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                         className={styles.editInput}
                                                         value={editingValue}
                                                         autoFocus
+                                                        disabled={mutateLoading}
                                                         onChange={(e) =>
                                                             setEditingValue(e.target.value)
                                                         }
                                                         onBlur={commitEdit}
                                                         onKeyDown={(e) => {
+                                                            if (mutateLoading) return;
                                                             if (e.key === "Enter") commitEdit();
                                                             if (e.key === "Escape") cancelEdit();
                                                         }}
@@ -220,6 +225,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                     <button
                                                         type="button"
                                                         className={styles.todoTextButton}
+                                                        disabled={mutateLoading}
                                                         onClick={() => startEdit(t)}
                                                     >
                                                         {t.content}
@@ -232,6 +238,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                 type="button"
                                                 className={styles.deleteButton}
                                                 aria-label="刪除代辦"
+                                                disabled={mutateLoading}
                                                 onClick={() => removeTodo(t.id)}
                                             >
                                                 <img src={deleteImg} alt="" />
