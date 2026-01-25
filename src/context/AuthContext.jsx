@@ -11,23 +11,23 @@ const initialState = {
 
 function authReducer(state, action) {
     switch (action.type) {
-        case "INIT_START":
+        case "AUTH/INIT/REQUEST_START":
             return { ...state, authStatus: "checking", user: null };
 
-        case "INIT_GUEST":
+        case "AUTH/INIT/SUCCESS_GUEST":
             return { ...state, authStatus: "guest", user: null };
 
-        case "INIT_AUTHED":
+        case "AUTH/INIT/SUCCESS_AUTHED":
             return { ...state, authStatus: "authed", user: action.payload ?? null };
 
-        case "SIGN_OUT":
+        case "AUTH/SIGN_OUT":
             return { ...state, authStatus: "guest", user: null };
 
         // 讓 AuthPageContext 能維持目前用法（登入成功直接塞狀態）
-        case "SET_AUTH_STATUS":
+        case "AUTH/STATUS/SET":
             return { ...state, authStatus: action.payload };
 
-        case "SET_USER":
+        case "AUTH/USER/SET":
             return { ...state, user: action.payload };
 
         default:
@@ -40,18 +40,18 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const init = async () => {
-            dispatch({ type: "INIT_START" });
+            dispatch({ type: "AUTH/INIT/REQUEST_START" });
 
             const token = localStorage.getItem("token");
             if (!token) {
-                dispatch({ type: "INIT_GUEST" });
+                dispatch({ type: "AUTH/INIT/SUCCESS_GUEST" });
                 return;
             }
 
             try {
                 const res = await checkToken();
                 dispatch({
-                    type: "INIT_AUTHED",
+                    type: "AUTH/INIT/SUCCESS_AUTHED",
                     payload: {
                         uid: res.data?.uid ?? null,
                         nickname: res.data?.nickname ?? "",
@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
                 });
             } catch {
                 localStorage.removeItem("token");
-                dispatch({ type: "INIT_GUEST" });
+                dispatch({ type: "AUTH/INIT/SUCCESS_GUEST" });
             }
         };
 
@@ -73,16 +73,16 @@ export function AuthProvider({ children }) {
             // 忽略（就算後端登出失敗，前端仍要清掉狀態）
         } finally {
             localStorage.removeItem("token");
-            dispatch({ type: "SIGN_OUT" });
+            dispatch({ type: "AUTH/SIGN_OUT" });
         }
     };
 
     const setAuthStatus = (nextStatus) => {
-        dispatch({ type: "SET_AUTH_STATUS", payload: nextStatus });
+        dispatch({ type: "AUTH/STATUS/SET", payload: nextStatus });
     };
 
     const setUser = (nextUser) => {
-        dispatch({ type: "SET_USER", payload: nextUser });
+        dispatch({ type: "AUTH/USER/SET", payload: nextUser });
     };
 
     const value = useMemo(
