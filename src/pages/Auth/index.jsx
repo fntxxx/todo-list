@@ -1,7 +1,7 @@
 // pages/Auth/index.jsx
 import { useParams } from "react-router-dom";
 import AuthView from "../../components/AuthView";
-import { AuthPageProvider } from "./AuthContext";
+import { AuthPageProvider } from "./AuthPageContext";
 
 export default function AuthPage() {
     const { type } = useParams();

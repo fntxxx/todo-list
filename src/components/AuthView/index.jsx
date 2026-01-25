@@ -7,7 +7,7 @@ import heroImg from "../../assets/images/hero.png";
 
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
-import { useAuthPage } from "../../pages/Auth/AuthContext";
+import { useAuthPage } from "../../pages/Auth/AuthPageContext";
 
 export default function AuthView({ mode }) {
     const isSignIn = mode === "signin";

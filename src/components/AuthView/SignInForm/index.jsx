@@ -1,7 +1,7 @@
 // components/AuthView/SignInForm/index.jsx
 import { useState } from "react";
 import styles from "./style.module.scss";
-import { useAuthPage } from "../../../pages/Auth/AuthContext";
+import { useAuthPage } from "../../../pages/Auth/AuthPageContext";
 
 export default function SignInForm() {
     const { loading, error, setError, signInAction } = useAuthPage();
