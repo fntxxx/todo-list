@@ -38,6 +38,13 @@ export function todoReducer(state, action) {
         case TODO_ACTIONS.CREATE_REQUEST_END:
             return { ...state, createLoading: false };
 
+        // --------- MUTATE request state (delete/toggle/edit) ---------
+        case TODO_ACTIONS.MUTATE_REQUEST_START:
+            return { ...state, mutateLoading: true, error: "" };
+
+        case TODO_ACTIONS.MUTATE_REQUEST_END:
+            return { ...state, mutateLoading: false };
+
         // --------- CREATE (optimistic) ---------
         case TODO_ACTIONS.CREATE_OPTIMISTIC_ADD:
             return { ...state, error: "", todos: [...state.todos, action.payload] };

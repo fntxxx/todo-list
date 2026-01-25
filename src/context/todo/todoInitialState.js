@@ -11,6 +11,7 @@ export const initialState = {
 
     fetchLoading: false,
     createLoading: false,
+    mutateLoading: false,
 
     error: "",
 };

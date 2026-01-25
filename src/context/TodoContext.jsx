@@ -85,7 +85,6 @@ export function TodoProvider({ children }) {
                     payload: { tempId, created },
                 });
             } else {
-                // 後端沒回完整 todo → 直接重載一次，避免 UI 與伺服器不一致
                 await refreshTodos();
             }
 
@@ -105,8 +104,11 @@ export function TodoProvider({ children }) {
     };
 
     const removeTodo = async (id) => {
-        const snapshot = state.todos;
+        if (state.mutateLoading) return false;
 
+        dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_START });
+
+        const snapshot = state.todos;
         dispatch({ type: TODO_ACTIONS.DELETE_OPTIMISTIC_REMOVE, payload: id });
 
         try {
@@ -121,12 +123,17 @@ export function TodoProvider({ children }) {
                 },
             });
             return false;
+        } finally {
+            dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_END });
         }
     };
 
     const toggleTodoStatus = async (id) => {
-        const snapshot = state.todos;
+        if (state.mutateLoading) return false;
 
+        dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_START });
+
+        const snapshot = state.todos;
         dispatch({ type: TODO_ACTIONS.TOGGLE_OPTIMISTIC_FLIP, payload: id });
 
         try {
@@ -141,15 +148,19 @@ export function TodoProvider({ children }) {
                 },
             });
             return false;
+        } finally {
+            dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_END });
         }
     };
 
     const editTodoContent = async (id, content) => {
         const trimmed = content.trim();
         if (!trimmed) return false;
+        if (state.mutateLoading) return false;
+
+        dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_START });
 
         const snapshot = state.todos;
-
         dispatch({
             type: TODO_ACTIONS.EDIT_OPTIMISTIC_UPDATE,
             payload: { id, content: trimmed },
@@ -167,6 +178,8 @@ export function TodoProvider({ children }) {
                 },
             });
             return false;
+        } finally {
+            dispatch({ type: TODO_ACTIONS.MUTATE_REQUEST_END });
         }
     };
 
@@ -184,9 +197,10 @@ export function TodoProvider({ children }) {
             // 相容舊 UI：loading 仍代表「載入清單」
             loading: state.fetchLoading,
 
-            // 新增拆分後的 request states
+            // request states
             fetchLoading: state.fetchLoading,
             createLoading: state.createLoading,
+            mutateLoading: state.mutateLoading,
 
             error: state.error,
 
@@ -205,6 +219,7 @@ export function TodoProvider({ children }) {
             state.filter,
             state.fetchLoading,
             state.createLoading,
+            state.mutateLoading,
             state.error,
             filteredTodos,
         ]
