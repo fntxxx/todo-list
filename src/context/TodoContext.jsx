@@ -62,6 +62,8 @@ export function TodoProvider({ children }) {
         const trimmed = content.trim();
         if (!trimmed) return false;
 
+        dispatch({ type: TODO_ACTIONS.CREATE_REQUEST_START });
+
         const tempId = `temp-${Date.now()}`;
         const tempTodo = {
             id: tempId,
@@ -83,6 +85,7 @@ export function TodoProvider({ children }) {
                     payload: { tempId, created },
                 });
             } else {
+                // 後端沒回完整 todo → 直接重載一次，避免 UI 與伺服器不一致
                 await refreshTodos();
             }
 
@@ -96,6 +99,8 @@ export function TodoProvider({ children }) {
                 },
             });
             return false;
+        } finally {
+            dispatch({ type: TODO_ACTIONS.CREATE_REQUEST_END });
         }
     };
 
@@ -175,7 +180,14 @@ export function TodoProvider({ children }) {
             todos: state.todos,
             filter: state.filter,
             filteredTodos,
-            loading: state.loading,
+
+            // 相容舊 UI：loading 仍代表「載入清單」
+            loading: state.fetchLoading,
+
+            // 新增拆分後的 request states
+            fetchLoading: state.fetchLoading,
+            createLoading: state.createLoading,
+
             error: state.error,
 
             // actions
@@ -188,7 +200,14 @@ export function TodoProvider({ children }) {
 
             clearError: () => dispatch({ type: TODO_ACTIONS.ERROR_CLEAR }),
         }),
-        [state.todos, state.filter, state.loading, state.error, filteredTodos]
+        [
+            state.todos,
+            state.filter,
+            state.fetchLoading,
+            state.createLoading,
+            state.error,
+            filteredTodos,
+        ]
     );
 
     return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;

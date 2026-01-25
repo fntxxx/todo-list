@@ -13,18 +13,30 @@ export function todoReducer(state, action) {
         case TODO_ACTIONS.FILTER_SET:
             return { ...state, filter: action.payload };
 
+        // --------- FETCH ---------
         case TODO_ACTIONS.FETCH_REQUEST_START:
-            return { ...state, loading: true, error: "" };
+            return { ...state, fetchLoading: true, error: "" };
 
         case TODO_ACTIONS.FETCH_SUCCESS:
-            return { ...state, loading: false, todos: action.payload ?? [] };
+            return {
+                ...state,
+                fetchLoading: false,
+                todos: action.payload ?? [],
+            };
 
         case TODO_ACTIONS.FETCH_FAIL:
             return {
                 ...state,
-                loading: false,
+                fetchLoading: false,
                 error: action.payload || "載入代辦清單失敗",
             };
+
+        // --------- CREATE request state ---------
+        case TODO_ACTIONS.CREATE_REQUEST_START:
+            return { ...state, createLoading: true, error: "" };
+
+        case TODO_ACTIONS.CREATE_REQUEST_END:
+            return { ...state, createLoading: false };
 
         // --------- CREATE (optimistic) ---------
         case TODO_ACTIONS.CREATE_OPTIMISTIC_ADD:

@@ -8,6 +8,9 @@ export const FILTERS = {
 export const initialState = {
     todos: [],
     filter: FILTERS.ALL,
-    loading: false,
+
+    fetchLoading: false,
+    createLoading: false,
+
     error: "",
 };
