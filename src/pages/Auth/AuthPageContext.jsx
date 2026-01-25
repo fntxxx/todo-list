@@ -1,32 +1,63 @@
 // pages/Auth/AuthContext.jsx
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, signUp } from "../../services/apiClient";
 import { useAuth } from "../../context/AuthContext";
 
 const AuthPageContext = createContext(null);
 
+const initialState = {
+    loading: false,
+    error: "",
+};
+
+function authPageReducer(state, action) {
+    switch (action.type) {
+        case "CLEAR_ERROR":
+            return { ...state, error: "" };
+
+        case "SET_ERROR":
+            return { ...state, error: action.payload || "" };
+
+        case "SUBMIT_START":
+            return { ...state, loading: true, error: "" };
+
+        case "SUBMIT_END":
+            return { ...state, loading: false };
+
+        default:
+            return state;
+    }
+}
+
 export function AuthPageProvider({ children }) {
     const navigate = useNavigate();
     const { setAuthStatus, setUser } = useAuth();
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [state, dispatch] = useReducer(authPageReducer, initialState);
+
+    const setError = (message) => {
+        dispatch({ type: "SET_ERROR", payload: message });
+    };
+
+    const clearError = () => {
+        dispatch({ type: "CLEAR_ERROR" });
+    };
 
     const signInAction = async ({ email, password }) => {
-        setError("");
-        setLoading(true);
+        clearError();
+        dispatch({ type: "SUBMIT_START" });
 
         try {
             const res = await signIn({ email, password });
 
             const token = res.data?.token;
             const nickname = res.data?.nickname;
+
             if (!token) throw new Error("登入失敗");
 
             localStorage.setItem("token", token);
 
-            // ✅ 立刻把全站狀態切成已登入（不用重整）
             setAuthStatus("authed");
             setUser({
                 uid: null,
@@ -39,19 +70,19 @@ export function AuthPageProvider({ children }) {
             setError(err.response?.data?.message || "登入失敗，請確認帳號密碼");
             return false;
         } finally {
-            setLoading(false);
+            dispatch({ type: "SUBMIT_END" });
         }
     };
 
     const signUpAction = async ({ email, nickname, password, confirmPassword }) => {
-        setError("");
+        clearError();
 
         if (password !== confirmPassword) {
             setError("兩次輸入的密碼不一致");
             return false;
         }
 
-        setLoading(true);
+        dispatch({ type: "SUBMIT_START" });
 
         try {
             const res = await signUp({ email, nickname, password });
@@ -64,19 +95,19 @@ export function AuthPageProvider({ children }) {
             setError(err.response?.data?.message || "註冊失敗，請稍後再試");
             return false;
         } finally {
-            setLoading(false);
+            dispatch({ type: "SUBMIT_END" });
         }
     };
 
     const value = useMemo(
         () => ({
-            loading,
-            error,
+            loading: state.loading,
+            error: state.error,
             setError,
             signInAction,
             signUpAction,
         }),
-        [loading, error]
+        [state.loading, state.error]
     );
 
     return <AuthPageContext.Provider value={value}>{children}</AuthPageContext.Provider>;
