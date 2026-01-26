@@ -24,14 +24,13 @@
 ## 📌 專案介紹
 
 本專案為前端練習專案，實作一個具備登入機制的線上代辦事項（Todo）系統。
-專案重點不僅在 CRUD 功能本身，而是放在 **狀態管理架構、非同步請求處理、以及 View 職責切分**。
 
-整體設計目標為：
+重點不在 CRUD 本身，而是放在：
 
-- 狀態來源單一、可預期
-- API 非同步流程清楚（loading / error / rollback）
-- View 元件只負責呈現，不承擔商業邏輯
-- 能清楚說明設計決策與流程
+- 狀態管理架構
+- 非同步請求流程（loading / error / rollback）
+- View 與邏輯的責任切分
+- 設計決策與流程的可說明性
 
 ---
 
@@ -40,28 +39,23 @@
 ### 🧭 進站主流程
 ![進站流程](./flows/main-flow.jpg)
 
-- 使用者進站
-- 檢查是否存在 token
-- 驗證 token 是否有效
-- 已登入導向 Todo 頁
-- 未登入導向登入頁
+- 進站後檢查 token
+- 驗證結果決定導向 Todo 頁或登入頁
 
 ---
 
 ### 🔐 登入流程
 ![登入流程](./flows/signin-flow.jpg)
 
-- 使用者輸入帳號密碼
 - 呼叫登入 API
-- 成功後儲存 token，設定登入狀態
-- 失敗則顯示錯誤訊息
+- 成功：儲存 token，設定登入狀態
+- 失敗：顯示錯誤訊息
 
 ---
 
 ### 📝 註冊流程
 ![註冊流程](./flows/signup-flow.jpg)
 
-- 使用者填寫註冊資料
 - 呼叫註冊 API
 - 成功後導向登入頁
 
@@ -78,56 +72,43 @@
 ### 🔑 Token 初始化流程
 ![Token 初始化流程](./flows/token-init-flow.jpg)
 
-- App 啟動時檢查是否存在 token
-- 呼叫 token 驗證 API
-- 有效則設定為已登入狀態
-- 無效則清除資料並進入未登入狀態
+- App 啟動時驗證 token
+- 有效：設定為已登入狀態
+- 無效：清除資料並進入未登入狀態
 
 ---
 
 ### 📋 Todo 初始化流程
 ![Todo 初始化流程](./flows/todo-init-flow.jpg)
 
-- 進入 Todo 頁
-- 呼叫取得 Todo 清單 API
-- 成功後寫入狀態
+- 進入 Todo 頁後取得清單
+- 成功寫入狀態
 - 失敗顯示錯誤
-- token 無效時觸發登出流程
+- token 無效時觸發登出
 
 ---
 
 ### ➕ 新增 Todo（Optimistic Update）
 ![新增 Todo](./flows/todo-create-flow.jpg)
 
-- 先行新增暫存 Todo
-- 呼叫新增 API
-- 成功：以正式資料取代
-- 失敗：rollback 並顯示錯誤
+- 先顯示暫存 Todo
+- API 成功：以正式資料取代
+- API 失敗：rollback 並顯示錯誤
 
 ---
 
 ### ✏️ 編輯 / 🗑 刪除 / ✅ 切換狀態（彙總說明）
 
-以下三種操作在行為與狀態管理上採用相同的設計模式，因此合併說明：
+編輯、刪除與完成狀態切換共用相同設計模式：
 
-- **編輯 Todo**
-- **刪除 Todo**
-- **切換完成狀態**
-
-共通設計重點如下：
-
-- 操作時立即更新畫面（Optimistic Update）
-- 同步呼叫對應 API
-- API 失敗時進行 rollback，恢復先前狀態
-- 對使用者顯示錯誤提示，但不影響其他操作
-
-此設計可確保操作即時性，同時維持資料一致性。
+- 操作即時反映於畫面（optimistic update）
+- API 失敗時 rollback
+- 錯誤不影響其他操作
 
 ---
 
 ### 🔍 Todo 篩選流程（補充說明）
 
-- 使用者切換篩選條件（全部 / 未完成 / 已完成）
 - 依目前狀態即時計算顯示結果
 - 不觸發 API 請求
 
@@ -135,8 +116,7 @@
 
 ## 📸 專案畫面
 
-以下為實際操作畫面截圖，用於呈現使用者在不同階段的操作體驗。
-流程與狀態行為細節已於前述流程圖章節說明，此處僅展示最終畫面。
+以下為實際操作畫面截圖，流程與狀態行為已於流程圖章節說明。
 
 ---
 
@@ -144,19 +124,11 @@
 
 ![登入頁](./screenshots/signin.jpg)
 
-- 提供 Email / Password 登入
-- 作為未登入狀態的預設入口
-- 與註冊頁共用一致的版型與視覺風格
-
 ---
 
 ### 📝 註冊頁
 
 ![註冊頁](./screenshots/signup.jpg)
-
-- 建立新帳號（Email / 暱稱 / 密碼）
-- 驗證完成後導向登入流程
-- 表單結構與登入頁保持一致
 
 ---
 
@@ -164,55 +136,43 @@
 
 ![Todo 主畫面](./screenshots/todo.jpg)
 
-- 新增代辦事項
-- 切換篩選狀態（全部 / 待完成 / 已完成）
-- 編輯、刪除與完成狀態切換
-- 即時顯示剩餘待完成項目數量
-
-> 📌 編輯 / 刪除 / 切換狀態的行為流程與錯誤處理，
-> 已於「流程設計」章節以流程圖方式說明。
-
 ---
 
-## ✨ 功能說明
+## 功能說明
 
 - **登入 / 註冊**
-  - 驗證使用者身分
-  - token 驗證與自動登出處理
-
+    - token 驗證與自動登出處理
 - **Todo 管理**
-  - 新增 / 編輯 / 刪除 / 切換完成狀態
-  - 全流程採 optimistic update
-  - API 失敗時自動 rollback
-
+    - 新增 / 編輯 / 刪除 / 狀態切換
+    - 全流程採 optimistic update
+    - API 失敗時 rollback
 - **篩選功能**
-  - 顯示全部 / 未完成 / 已完成
-  - 支援鍵盤操作（左右鍵、Home、End）
-
+    - 全部 / 未完成 / 已完成
+    - 支援鍵盤操作
 - **錯誤與載入狀態**
-  - request state 拆分（fetch / create / mutate）
-  - 錯誤訊息與 loading 顯示一致化
+    - request state 拆分（fetch / create / mutate）
+    - loading 與 error 顯示一致化
 
 ---
 
 ## 🧱 狀態管理架構
 
-本專案使用 React `useReducer` 與 Context 進行狀態管理，並明確區分責任：
-
 ### AuthContext
+
 - 管理登入狀態（checking / authed / guest）
-- token 初始化與登出集中處理
+- token 初始化與登出
 
 ### AuthPageContext
-- 僅管理登入 / 註冊頁的 loading 與 error
-- reducer 不處理 side effect
+
+- 管理登入 / 註冊頁的 loading 與 error
 
 ### TodoContext
-- 管理 Todo 清單與 request 狀態
-- reducer 模組化拆分
-- action 命名統一為 `DOMAIN / OPERATION / DETAIL`
 
-```js
+- 管理 Todo 與 request state
+- reducer 模組化
+- action 命名：`DOMAIN / OPERATION / DETAIL`
+
+```jsx
 {
   todos,
   filter,
@@ -287,53 +247,26 @@ src/
 
 ---
 
-## 🧩 View 與狀態的責任切分
+## 🧩 View 與狀態責任切分
 
-- **Pages**
-    - 負責路由對應與頁面組裝
-    - 不包含商業邏輯
-- **View Components**
-    - 僅負責畫面與互動
-    - 直接使用對應的 Page Context
-    - 不接收大量 props
-- **Context / Reducer**
-    - 管理狀態與非同步流程
-    - 對外提供 actions
-    - reducer 不處理 side effect
+- **Pages**：路由與頁面組裝
+- **View Components**：畫面與互動
+- **Context / Reducer**：狀態與非同步流程
 
 ---
 
 ## ⚙️ 非同步請求與狀態設計
 
-Todo 相關操作依性質拆分為三類 request state：
-
-- **fetch**
-  - 用於初始化 Todo 清單
-  - 控制整頁載入與初始化錯誤顯示
-
-- **create**
-  - 專責新增 Todo 行為
-  - 避免新增時影響既有清單操作
-
-- **mutate**
-  - 用於編輯 / 刪除 / 切換完成狀態
-  - 多個操作共用，確保行為一致
-
-此設計可避免不同操作互相影響 loading 與 error 狀態，
-並讓 UI 能針對不同操作顯示對應的回饋。
+Todo 相關操作依性質拆分為 fetch / create / mutate 三類 request state，
+以避免不同操作互相影響 loading 與 error 顯示，並讓 UI 回饋更精準。
 
 ---
 
-## 🔁 Optimistic Update 設計
+## 🔁 Optimistic Update
 
-Todo 的新增、編輯、刪除與狀態切換皆採用 optimistic update：
-
-- 操作時立即更新 UI
-- 同步發送 API 請求
-- 成功則確認狀態
-- 失敗時 rollback 並顯示錯誤
-
-此模式可提升操作即時性，同時維持資料一致性。
+- 操作即時更新 UI
+- API 失敗時 rollback
+- 確保操作即時性與資料一致性
 
 ---
 
