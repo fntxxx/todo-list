@@ -94,7 +94,6 @@ export default function TodoItem({ todo }) {
                 <label
                     htmlFor={`todo-${todo.id}`}
                     className={styles.checkboxLabel}
-                    aria-label="切換完成狀態"
                 />
 
                 {isEditing ? (
