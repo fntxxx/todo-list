@@ -88,12 +88,12 @@ export default function TodoItem({ todo }) {
                     checked={isDone}
                     disabled={mutateLoading}
                     onChange={() => toggleTodoStatus(todo.id)}
+                    aria-label={`標記代辦事項「${todo.content}」為完成`}
                 />
 
                 <label
                     htmlFor={`todo-${todo.id}`}
                     className={styles.checkboxLabel}
-                    aria-label="切換完成狀態"
                 />
 
                 {isEditing ? (
