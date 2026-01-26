@@ -20,20 +20,6 @@
     }
 }
 
-.isMutating {
-    .checkboxLabel {
-        cursor: not-allowed;
-        opacity: 0.6;
-        pointer-events: none; // 避免一直點 label 覺得壞掉
-    }
-
-    .todoTextButton,
-    .deleteButton {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-}
-
 .header {
     max-width: 311px;
     width: 100%;
@@ -168,18 +154,6 @@
         }
     }
 
-    &Item {
-        min-height: 36px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid #E5E5E5;
-
-        @include respond-sm {
-            border-bottom: 0;
-        }
-    }
-
     &Count {
         max-width: 279px;
         width: 100%;
@@ -190,85 +164,5 @@
         @include respond-sm {
             max-width: 476px;
         }
-    }
-}
-
-.itemLeft {
-    min-height: 36px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    min-width: 0;
-
-    @include respond-sm {
-        max-width: 428px;
-        width: 100%;
-        border-bottom: 1px solid #E5E5E5;
-    }
-}
-
-.checkboxInput {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-}
-
-.checkboxLabel {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-
-    &::before {
-        content: "";
-        width: 20px;
-        height: 20px;
-        border: 1px solid $color-secondary-light;
-        border-radius: 5px;
-        display: inline-block;
-    }
-}
-
-.checkboxInput:checked+.checkboxLabel::before {
-    border: 0;
-    border-radius: 0;
-    border-left: 3px solid $color-primary;
-    border-bottom: 3px solid $color-primary;
-    width: 20px;
-    height: 10px;
-    transform: translateX(2px) translateY(2.52px) rotate(-45deg);
-}
-
-.checkboxInput:focus-visible+.checkboxLabel::before {
-    outline: 3px solid rgba(0, 0, 0, 0.15);
-    outline-offset: 2px;
-}
-
-.todoTextButton {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
-    line-height: 20px;
-
-    @include text-ellipsis;
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-}
-
-.isDone .todoTextButton {
-    color: $color-secondary-light;
-    text-decoration: line-through;
-}
-
-.deleteButton {
-    width: 16px;
-    height: 16px;
-    @include flex-center;
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
     }
 }
