@@ -11,11 +11,11 @@ import { useAuthPage } from "../../pages/Auth/AuthPageContext";
 
 export default function AuthView({ mode }) {
     const isSignIn = mode === "signin";
-    const { setError } = useAuthPage();
+    const { clearError } = useAuthPage();
 
     useEffect(() => {
-        setError("");
-    }, [mode, setError]);
+        clearError();
+    }, [mode, clearError]);
 
     return (
         <div className={styles.container}>
