@@ -1,0 +1,33 @@
+//  components/TodoListView/TodoFilterTabs/style.module.scss
+@use "../../../assets/styles/variables" as *;
+@use "../../../assets/styles/mixins" as *;
+
+.todoHeader {
+    width: 100%;
+}
+
+.filter {
+    &List {
+        width: 100%;
+        display: flex;
+    }
+
+    &Item {
+        width: 100%;
+        flex-grow: 1;
+    }
+
+    &Button {
+        @include flex-center;
+        min-height: 51px;
+        width: 100%;
+        flex-grow: 1;
+        border-bottom: 2px solid #EFEFEF;
+        color: $color-secondary-light;
+    }
+}
+
+.isActive {
+    border-color: $color-secondary;
+    color: $color-secondary;
+}

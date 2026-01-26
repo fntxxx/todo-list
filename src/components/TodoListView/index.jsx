@@ -7,12 +7,7 @@ import logoImg from "../../assets/images/logo-sm.svg";
 import deleteImg from "../../assets/images/delete.svg";
 import emptyImg from "../../assets/images/empty.png";
 import TodoCreateForm from "./TodoCreateForm";
-
-const FILTER_ITEMS = [
-    { value: FILTERS.ALL, label: "全部" },
-    { value: FILTERS.TODO, label: "待完成" },
-    { value: FILTERS.DONE, label: "已完成" },
-];
+import TodoFilterTabs from "./TodoFilterTabs";
 
 export default function TodoListView({ nickname, onSignOut }) {
     const {
@@ -32,9 +27,6 @@ export default function TodoListView({ nickname, onSignOut }) {
 
     /* ---------- refs ---------- */
 
-    // 篩選 tablist
-    const filterListRef = useRef(null);
-
     // 編輯
     const editInputRef = useRef(null);
     const editingOriginalRef = useRef("");
@@ -52,41 +44,6 @@ export default function TodoListView({ nickname, onSignOut }) {
         queueMicrotask(() => {
             el.focus?.();
         });
-    };
-
-    const focusFilterButtonByIndex = (index) => {
-        const root = filterListRef.current;
-        if (!root) return;
-
-        const buttons = root.querySelectorAll('button[role="tab"]');
-        const target = buttons[index];
-        target?.focus?.();
-    };
-
-    const handleFilterKeyDown = (e, currentIndex) => {
-        const key = e.key;
-        const total = FILTER_ITEMS.length;
-
-        const isNavKey =
-            key === "ArrowLeft" ||
-            key === "ArrowRight" ||
-            key === "Home" ||
-            key === "End";
-
-        if (!isNavKey) return;
-
-        e.preventDefault();
-
-        let nextIndex = currentIndex;
-
-        if (key === "ArrowLeft") nextIndex = (currentIndex - 1 + total) % total;
-        if (key === "ArrowRight") nextIndex = (currentIndex + 1) % total;
-        if (key === "Home") nextIndex = 0;
-        if (key === "End") nextIndex = total - 1;
-
-        const next = FILTER_ITEMS[nextIndex];
-        setFilter(next.value);
-        focusFilterButtonByIndex(nextIndex);
     };
 
     /* ---------- handlers ---------- */
@@ -140,36 +97,7 @@ export default function TodoListView({ nickname, onSignOut }) {
 
                 {totalCount > 0 && (
                     <section className={styles.todo}>
-                        {/* 篩選 */}
-                        <header className={styles.todoHeader}>
-                            <ul
-                                ref={filterListRef}
-                                className={styles.filterList}
-                                role="tablist"
-                                aria-label="代辦事項篩選"
-                            >
-                                {FILTER_ITEMS.map((item, idx) => {
-                                    const isSelected = filter === item.value;
-
-                                    return (
-                                        <li key={item.value} className={styles.filterItem}>
-                                            <button
-                                                type="button"
-                                                role="tab"
-                                                aria-selected={isSelected}
-                                                tabIndex={isSelected ? 0 : -1}
-                                                className={`${styles.filterButton} ${isSelected ? styles.isActive : ""
-                                                    }`}
-                                                onClick={() => setFilter(item.value)}
-                                                onKeyDown={(e) => handleFilterKeyDown(e, idx)}
-                                            >
-                                                {item.label}
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </header>
+                        <TodoFilterTabs />
 
                         <div className={styles.todoBody}>
                             {!loading && error && (
