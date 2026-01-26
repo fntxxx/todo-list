@@ -1,5 +1,5 @@
 // components/TodoListView/index.jsx
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FILTERS } from "../../context/TodoContext";
 import { useTodoPage } from "../../pages/TodoList/TodoPageContext";
 import styles from "./style.module.scss";
@@ -32,12 +32,27 @@ export default function TodoListView({ nickname, onSignOut }) {
         editTodoContent,
     } = useTodoPage();
 
+    const inputRef = useRef(null);
+
+    // 只在「新增 loading 結束（true -> false）」時，才把焦點放回新增輸入框
+    const prevCreateLoadingRef = useRef(createLoading);
+    useEffect(() => {
+        const prev = prevCreateLoadingRef.current;
+        if (prev && !createLoading) {
+            inputRef.current?.focus();
+        }
+        prevCreateLoadingRef.current = createLoading;
+    }, [createLoading]);
+
     // 新增用
     const [newContent, setNewContent] = useState("");
 
     // 編輯用
     const [editingId, setEditingId] = useState(null);
     const [editingValue, setEditingValue] = useState("");
+
+    // 防止同一輪事件（Enter 觸發 blur）造成重複 commit
+    const commitLockRef = useRef(false);
 
     /* ---------- handlers ---------- */
 
@@ -69,10 +84,21 @@ export default function TodoListView({ nickname, onSignOut }) {
     };
 
     const commitEdit = async () => {
-        if (!editingId) return;
-        if (mutateLoading) return;
-        const ok = await editTodoContent(editingId, editingValue);
-        if (ok) cancelEdit();
+        if (commitLockRef.current) return;
+        commitLockRef.current = true;
+
+        try {
+            if (!editingId) return;
+            if (mutateLoading) return;
+
+            const ok = await editTodoContent(editingId, editingValue);
+            if (ok) cancelEdit();
+        } finally {
+            // 等事件迴圈結束後再解鎖，避免 Enter -> blur 連續觸發
+            queueMicrotask(() => {
+                commitLockRef.current = false;
+            });
+        }
     };
 
     /* ---------- render ---------- */
@@ -103,6 +129,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                 {/* 新增 */}
                 <form className={styles.form} onSubmit={handleCreate}>
                     <input
+                        ref={inputRef}
                         type="text"
                         placeholder="新增待辦事項"
                         className={styles.input}
@@ -217,8 +244,17 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                         onBlur={commitEdit}
                                                         onKeyDown={(e) => {
                                                             if (mutateLoading) return;
-                                                            if (e.key === "Enter") commitEdit();
-                                                            if (e.key === "Escape") cancelEdit();
+
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault();
+                                                                // 固定讓 Enter 走 blur -> onBlur(commitEdit) 的單一路徑
+                                                                e.currentTarget.blur();
+                                                                return;
+                                                            }
+
+                                                            if (e.key === "Escape") {
+                                                                cancelEdit();
+                                                            }
                                                         }}
                                                     />
                                                 ) : (
