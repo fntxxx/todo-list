@@ -20,20 +20,6 @@
     }
 }
 
-.isMutating {
-    .checkboxLabel {
-        cursor: not-allowed;
-        opacity: 0.6;
-        pointer-events: none; // 避免一直點 label 覺得壞掉
-    }
-
-    .todoTextButton,
-    .deleteButton {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-}
-
 .header {
     max-width: 311px;
     width: 100%;
@@ -110,80 +96,6 @@
     }
 }
 
-.form {
-    width: 100%;
-    min-height: 47px;
-    background-color: $color-white;
-    border-radius: 10px;
-    padding-right: 4px;
-    padding-left: 16px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-    @include flex-between;
-}
-
-.input {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-normal;
-    color: $color-secondary;
-    display: inline-block;
-    min-height: 47px;
-    flex: 1;
-    min-width: 0;
-
-    &::placeholder {
-        color: $color-secondary-light;
-    }
-
-    &:focus {
-        outline: 0;
-    }
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-}
-
-.addButton {
-    background-color: $color-secondary;
-    width: 40px;
-    height: 39px;
-    border-radius: 10px;
-    flex-shrink: 0;
-    @include flex-center;
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-}
-
-.empty {
-    &State {
-        margin-top: 36px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-
-        @include respond-sm {
-            margin-top: 60px;
-        }
-    }
-
-    &Image {
-        width: 100%;
-        max-width: 240px;
-        margin-bottom: 16px;
-    }
-
-    &Text {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-normal;
-        line-height: 23px;
-    }
-}
-
 .todo {
     width: 100%;
     background-color: $color-white;
@@ -216,18 +128,6 @@
         }
     }
 
-    &Item {
-        min-height: 36px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid #E5E5E5;
-
-        @include respond-sm {
-            border-bottom: 0;
-        }
-    }
-
     &Count {
         max-width: 279px;
         width: 100%;
@@ -238,111 +138,5 @@
         @include respond-sm {
             max-width: 476px;
         }
-    }
-}
-
-.filter {
-    &List {
-        width: 100%;
-        display: flex;
-    }
-
-    &Item {
-        width: 100%;
-        flex-grow: 1;
-    }
-
-    &Button {
-        @include flex-center;
-        min-height: 51px;
-        width: 100%;
-        flex-grow: 1;
-        border-bottom: 2px solid #EFEFEF;
-        color: $color-secondary-light;
-    }
-}
-
-.isActive {
-    border-color: $color-secondary;
-    color: $color-secondary;
-}
-
-.itemLeft {
-    min-height: 36px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    min-width: 0;
-
-    @include respond-sm {
-        max-width: 428px;
-        width: 100%;
-        border-bottom: 1px solid #E5E5E5;
-    }
-}
-
-.checkboxInput {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-}
-
-.checkboxLabel {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-
-    &::before {
-        content: "";
-        width: 20px;
-        height: 20px;
-        border: 1px solid $color-secondary-light;
-        border-radius: 5px;
-        display: inline-block;
-    }
-}
-
-.checkboxInput:checked+.checkboxLabel::before {
-    border: 0;
-    border-radius: 0;
-    border-left: 3px solid $color-primary;
-    border-bottom: 3px solid $color-primary;
-    width: 20px;
-    height: 10px;
-    transform: translateX(2px) translateY(2.52px) rotate(-45deg);
-}
-
-.checkboxInput:focus-visible+.checkboxLabel::before {
-    outline: 3px solid rgba(0, 0, 0, 0.15);
-    outline-offset: 2px;
-}
-
-.todoTextButton {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
-    line-height: 20px;
-
-    @include text-ellipsis;
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-}
-
-.isDone .todoTextButton {
-    color: $color-secondary-light;
-    text-decoration: line-through;
-}
-
-.deleteButton {
-    width: 16px;
-    height: 16px;
-    @include flex-center;
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
     }
 }
