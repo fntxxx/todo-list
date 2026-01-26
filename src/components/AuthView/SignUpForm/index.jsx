@@ -4,7 +4,7 @@ import styles from "./style.module.scss";
 import { useAuthPage } from "../../../pages/Auth/AuthPageContext";
 
 export default function SignUpForm() {
-    const { loading, error, setError, signUpAction } = useAuthPage();
+    const { loading, error, clearError, signUpAction } = useAuthPage();
 
     const [email, setEmail] = useState("");
     const [nickname, setNickname] = useState("");
@@ -13,7 +13,6 @@ export default function SignUpForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
         await signUpAction({ email, nickname, password, confirmPassword });
     };
 
@@ -36,7 +35,7 @@ export default function SignUpForm() {
                             className={styles.inputEmail}
                             value={email}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setEmail(e.target.value);
                             }}
                             required
@@ -56,7 +55,7 @@ export default function SignUpForm() {
                             className={styles.input}
                             value={nickname}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setNickname(e.target.value);
                             }}
                             required
@@ -76,7 +75,7 @@ export default function SignUpForm() {
                             className={styles.input}
                             value={password}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setPassword(e.target.value);
                             }}
                             required
@@ -96,7 +95,7 @@ export default function SignUpForm() {
                             className={styles.input}
                             value={confirmPassword}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setConfirmPassword(e.target.value);
                             }}
                             required
