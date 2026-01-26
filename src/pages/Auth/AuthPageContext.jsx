@@ -1,5 +1,5 @@
 // pages/Auth/AuthContext.jsx
-import { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useCallback, useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, signUp } from "../../services/apiClient";
 import { useAuth } from "../../context/AuthContext";
@@ -36,15 +36,15 @@ export function AuthPageProvider({ children }) {
 
     const [state, dispatch] = useReducer(authPageReducer, initialState);
 
-    const setError = (message) => {
+    const setError = useCallback((message) => {
         dispatch({ type: "ERROR/SET", payload: message });
-    };
+    }, []);
 
-    const clearError = () => {
+    const clearError = useCallback(() => {
         dispatch({ type: "ERROR/CLEAR" });
-    };
+    }, []);
 
-    const signInAction = async ({ email, password }) => {
+    const signInAction = useCallback(async ({ email, password }) => {
         clearError();
         dispatch({ type: "AUTH/SUBMIT/REQUEST_START" });
 
@@ -72,9 +72,9 @@ export function AuthPageProvider({ children }) {
         } finally {
             dispatch({ type: "AUTH/SUBMIT/REQUEST_END" });
         }
-    };
+    }, [clearError, navigate, setAuthStatus, setError, setUser]);
 
-    const signUpAction = async ({ email, nickname, password, confirmPassword }) => {
+    const signUpAction = useCallback(async ({ email, nickname, password, confirmPassword }) => {
         clearError();
 
         if (password !== confirmPassword) {
@@ -97,18 +97,16 @@ export function AuthPageProvider({ children }) {
         } finally {
             dispatch({ type: "AUTH/SUBMIT/REQUEST_END" });
         }
-    };
+    }, [clearError, navigate, setError]);
 
-    const value = useMemo(
-        () => ({
-            loading: state.loading,
-            error: state.error,
-            setError,
-            signInAction,
-            signUpAction,
-        }),
-        [state.loading, state.error]
-    );
+    const value = useMemo(() => ({
+        loading: state.loading,
+        error: state.error,
+        setError,
+        clearError,
+        signInAction,
+        signUpAction,
+    }), [state.loading, state.error, setError, clearError, signInAction, signUpAction]);
 
     return <AuthPageContext.Provider value={value}>{children}</AuthPageContext.Provider>;
 }

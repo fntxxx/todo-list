@@ -4,14 +4,13 @@ import styles from "./style.module.scss";
 import { useAuthPage } from "../../../pages/Auth/AuthPageContext";
 
 export default function SignInForm() {
-    const { loading, error, setError, signInAction } = useAuthPage();
+    const { loading, error, clearError, signInAction } = useAuthPage();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
         await signInAction({ email, password });
     };
 
@@ -34,7 +33,7 @@ export default function SignInForm() {
                             className={styles.inputEmail}
                             value={email}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setEmail(e.target.value);
                             }}
                             required
@@ -54,7 +53,7 @@ export default function SignInForm() {
                             className={styles.input}
                             value={password}
                             onChange={(e) => {
-                                setError("");
+                                clearError();
                                 setPassword(e.target.value);
                             }}
                             required
