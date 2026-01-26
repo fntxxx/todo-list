@@ -20,6 +20,20 @@
     }
 }
 
+.isMutating {
+    .checkboxLabel {
+        cursor: not-allowed;
+        opacity: 0.6;
+        pointer-events: none; // 避免一直點 label 覺得壞掉
+    }
+
+    .todoTextButton,
+    .deleteButton {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
 .header {
     max-width: 311px;
     width: 100%;
@@ -123,6 +137,11 @@
     &:focus {
         outline: 0;
     }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
 }
 
 .addButton {
@@ -132,6 +151,11 @@
     border-radius: 10px;
     flex-shrink: 0;
     @include flex-center;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
 }
 
 .empty {
@@ -300,6 +324,11 @@
     line-height: 20px;
 
     @include text-ellipsis;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
 }
 
 .isDone .todoTextButton {
@@ -311,4 +340,9 @@
     width: 16px;
     height: 16px;
     @include flex-center;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
 }
