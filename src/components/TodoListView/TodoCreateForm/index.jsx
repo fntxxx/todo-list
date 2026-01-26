@@ -64,6 +64,7 @@ export default function TodoCreateForm() {
                 className={styles.addButton}
                 disabled={createLoading}
                 aria-disabled={createLoading}
+                aria-label="新增代辦事項"
             >
                 <img src={addImg} alt="" />
             </button>
