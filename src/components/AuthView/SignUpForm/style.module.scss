@@ -1,0 +1,90 @@
+// components/AuthView/SignUpForm/style.module.scss
+@use "../../../assets/styles/variables" as *;
+@use "../../../assets/styles/mixins" as *;
+
+.title {
+    line-height: 35px;
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: $color-secondary;
+
+    @include respond-sm {
+        margin-right: auto;
+    }
+}
+
+.form {
+    width: 100%;
+    min-height: 255px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    margin-bottom: 4px;
+
+    @include respond-sm {
+        margin-bottom: 0;
+    }
+}
+
+.fieldset {
+    width: 100%;
+    min-height: 174px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.field {
+    width: 100%;
+    min-height: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-weight: $font-weight-bold;
+    color: $color-secondary;
+    line-height: 17px;
+    font-size: $font-size-xs;
+}
+
+.input {
+    & {
+        min-height: 43px;
+    }
+
+    &Email {
+        min-height: 47px;
+    }
+
+    &,
+    &Email {
+        display: block;
+        max-width: 304px;
+        width: 100%;
+        background-color: $color-white;
+        border-radius: 10px;
+        padding: 0 16px;
+        line-height: 23px;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-normal;
+        color: $color-secondary;
+
+        &::placeholder {
+            color: $color-secondary-light;
+        }
+    }
+}
+
+.button {
+    max-width: 160px;
+    width: 100%;
+    min-height: 47px;
+    background-color: $color-secondary;
+    color: $color-white;
+    border-radius: 10px;
+    @include flex-center;
+}

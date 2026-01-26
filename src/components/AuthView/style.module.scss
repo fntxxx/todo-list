@@ -1,0 +1,81 @@
+// components/AuthView/style.module.scss
+@use "../../assets/styles/variables" as *;
+@use "../../assets/styles/mixins" as *;
+
+.container {
+    background-color: $color-primary;
+    padding: 48px 32px 29px;
+    min-height: 608px;
+
+    @include respond-sm {
+        padding: 81px 12px;
+    }
+}
+
+.inner {
+    max-width: 312.6px;
+    width: 100%;
+    min-height: 426px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16.11px;
+
+    @include respond-sm {
+        max-width: 796px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.header {
+    max-width: 312.6px;
+    width: 100%;
+    min-height: 46.89px;
+
+    @include respond-sm {
+        max-width: 386px;
+        min-height: 448px;
+        @include flex-between;
+        flex-direction: column;
+    }
+}
+
+.title {
+    font-family: $font-family-title;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-secondary;
+    display: flex;
+    align-items: center;
+}
+
+.hero {
+    display: none;
+
+    @include respond-sm {
+        display: block;
+        width: 386px;
+    }
+}
+
+.main {
+    max-width: 311px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 24px;
+
+    @include respond-sm {
+        max-width: 304px;
+    }
+}
+
+.switchAuth {
+    line-height: 23px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+}

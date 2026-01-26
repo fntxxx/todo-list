@@ -1,0 +1,154 @@
+// components/TodoListView/style.module.scss
+@use "../../assets/styles/variables" as *;
+@use "../../assets/styles/mixins" as *;
+
+.container {
+    background-color: $color-primary;
+    padding: 16px 32px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16.55px;
+
+    @include respond-sm {
+        background: linear-gradient(173deg,
+                $color-primary 0%,
+                $color-primary 61%,
+                $color-white 61.5%,
+                $color-white 100%);
+        min-height: 670px;
+        gap: 40.55px;
+    }
+}
+
+.header {
+    max-width: 311px;
+    width: 100%;
+    min-height: 38.45px;
+    margin: 0 auto;
+    @include flex-between;
+    flex-wrap: wrap;
+
+    @include respond-sm {
+        max-width: 962px;
+    }
+
+    &Actions {
+        @include flex-between;
+        max-width: 28px;
+        width: 100%;
+        min-height: 20px;
+
+        @include respond-sm {
+            max-width: none;
+            width: auto;
+            min-height: 23px;
+            display: flex;
+            justify-content: flex-end;
+            max-width: none;
+            gap: 24px;
+        }
+    }
+}
+
+.heading {
+    max-width: 242.51px;
+    width: 100%;
+    font-family: $font-family-title;
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: $color-secondary;
+    display: flex;
+    align-items: center;
+}
+
+.nickname {
+    display: none;
+
+    @include respond-sm {
+        display: inline;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-bold;
+        color: $color-secondary;
+
+    }
+}
+
+.signOutButton {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+    color: $color-secondary;
+
+    @include respond-sm {
+        font-size: $font-size-sm;
+    }
+}
+
+.main {
+    max-width: 311px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @include respond-sm {
+        max-width: 500px;
+    }
+}
+
+.todo {
+    width: 100%;
+    background-color: $color-white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+
+    &Body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 23px 16px 16px;
+
+        @include respond-sm {
+            padding: 23px 18px 24px 24px;
+        }
+    }
+
+    &List {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 279px;
+        width: 100%;
+
+        @include respond-sm {
+            max-width: 476px;
+        }
+    }
+
+    &Count {
+        max-width: 279px;
+        width: 100%;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-normal;
+        text-align: left;
+
+        @include respond-sm {
+            max-width: 476px;
+        }
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
