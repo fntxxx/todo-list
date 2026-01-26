@@ -1,0 +1,27 @@
+// components/TodoListView/EmptyState/style.module.scss
+@use "../../../assets/styles/variables" as *;
+@use "../../../assets/styles/mixins" as *;
+
+.emptyState {
+    margin-top: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    @include respond-sm {
+        margin-top: 60px;
+    }
+}
+
+.emptyImage {
+    width: 100%;
+    max-width: 240px;
+    margin-bottom: 16px;
+}
+
+.emptyText {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-normal;
+    line-height: 23px;
+}

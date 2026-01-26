@@ -96,32 +96,6 @@
     }
 }
 
-.empty {
-    &State {
-        margin-top: 36px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-
-        @include respond-sm {
-            margin-top: 60px;
-        }
-    }
-
-    &Image {
-        width: 100%;
-        max-width: 240px;
-        margin-bottom: 16px;
-    }
-
-    &Text {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-normal;
-        line-height: 23px;
-    }
-}
-
 .todo {
     width: 100%;
     background-color: $color-white;

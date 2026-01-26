@@ -2,17 +2,15 @@
 import { useTodoPage } from "../../pages/TodoList/TodoPageContext";
 import styles from "./style.module.scss";
 import logoImg from "../../assets/images/logo-sm.svg";
-import emptyImg from "../../assets/images/empty.png";
 import TodoCreateForm from "./TodoCreateForm";
 import TodoFilterTabs from "./TodoFilterTabs";
 import TodoItem from "./TodoItem";
+import EmptyState from "./EmptyState";
+import ErrorBox from "./ErrorBox";
 
 export default function TodoListView({ nickname, onSignOut }) {
     const {
         todos,
-        loading,
-        error,
-        refreshTodos,
         remainingCount,
         totalCount,
     } = useTodoPage();
@@ -42,34 +40,14 @@ export default function TodoListView({ nickname, onSignOut }) {
             <main className={styles.main}>
                 <TodoCreateForm />
 
-                {totalCount === 0 && (
-                    <div className={styles.emptyState}>
-                        <p className={styles.emptyText}>目前尚無待辦事項</p>
-                        <img
-                            src={emptyImg}
-                            alt="目前尚無待辦事項"
-                            className={styles.emptyImage}
-                        />
-                    </div>
-                )}
+                {totalCount === 0 && <EmptyState />}
 
                 {totalCount > 0 && (
                     <section className={styles.todo}>
                         <TodoFilterTabs />
 
                         <div className={styles.todoBody}>
-                            {!loading && error && (
-                                <div className={styles.errorBox}>
-                                    <p className={styles.errorText}>{error}</p>
-                                    <button
-                                        type="button"
-                                        className={styles.retryButton}
-                                        onClick={refreshTodos}
-                                    >
-                                        重試
-                                    </button>
-                                </div>
-                            )}
+                            <ErrorBox />
 
                             <ul className={styles.todoList}>
                                 {todos.map((t) => (
