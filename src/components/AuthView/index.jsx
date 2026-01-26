@@ -35,9 +35,9 @@ export default function AuthView({ mode }) {
 
                     <div className={styles.switchAuth}>
                         {isSignIn ? (
-                            <Link to="/auth/signup">註冊帳號</Link>
+                            <Link to="/auth/signup" aria-label="前往註冊頁">註冊帳號</Link>
                         ) : (
-                            <Link to="/auth/signin">登入</Link>
+                            <Link to="/auth/signin" aria-label="前往登入頁">登入</Link>
                         )}
                     </div>
                 </div>

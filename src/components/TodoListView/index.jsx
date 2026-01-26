@@ -43,7 +43,13 @@ export default function TodoListView({ nickname, onSignOut }) {
                 {totalCount === 0 && <EmptyState />}
 
                 {totalCount > 0 && (
-                    <section className={styles.todo}>
+                    <section
+                        className={styles.todo}
+                        aria-labelledby="todo-section-title"
+                    >
+                        <h2 id="todo-section-title" className={styles.visuallyHidden}>
+                            代辦事項清單
+                        </h2>
                         <TodoFilterTabs />
 
                         <div className={styles.todoBody}>
