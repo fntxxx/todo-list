@@ -88,6 +88,7 @@ export default function TodoItem({ todo }) {
                     checked={isDone}
                     disabled={mutateLoading}
                     onChange={() => toggleTodoStatus(todo.id)}
+                    aria-label={`標記代辦事項「${todo.content}」為完成`}
                 />
 
                 <label
