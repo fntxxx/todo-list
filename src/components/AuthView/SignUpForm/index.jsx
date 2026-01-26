@@ -103,7 +103,15 @@ export default function SignUpForm() {
                         />
                     </div>
 
-                    {error && <p className={styles.error}>{error}</p>}
+                    {error && (
+                        <p
+                            className={styles.error}
+                            role="alert"
+                            aria-live="assertive"
+                        >
+                            {error}
+                        </p>
+                    )}
                 </fieldset>
 
                 <button
