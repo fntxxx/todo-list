@@ -1,5 +1,5 @@
 // components/TodoListView/index.jsx
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FILTERS } from "../../context/TodoContext";
 import { useTodoPage } from "../../pages/TodoList/TodoPageContext";
 import styles from "./style.module.scss";
@@ -32,12 +32,97 @@ export default function TodoListView({ nickname, onSignOut }) {
         editTodoContent,
     } = useTodoPage();
 
+    /* ---------- refs ---------- */
+
+    // 新增 input
+    const inputRef = useRef(null);
+    const prevCreateLoadingRef = useRef(createLoading);
+    const selectOnCreateFailRef = useRef(false);
+
+    // 篩選 tablist
+    const filterListRef = useRef(null);
+
+    // 編輯
+    const editInputRef = useRef(null);
+    const editingOriginalRef = useRef("");
+    const lastEditTriggerRef = useRef(null);
+
+    // 防止同一輪事件（Enter 觸發 blur）造成重複 commit
+    const commitLockRef = useRef(false);
+
+    /* ---------- state ---------- */
+
     // 新增用
     const [newContent, setNewContent] = useState("");
 
     // 編輯用
     const [editingId, setEditingId] = useState(null);
     const [editingValue, setEditingValue] = useState("");
+
+    /* ---------- effects ---------- */
+
+    // 1) 新增：只在「新增 loading 結束（true -> false）」時，才把焦點放回新增輸入框
+    // 2) 新增失敗：回填文字後，自動全選（讓使用者直接改）
+    useEffect(() => {
+        const prev = prevCreateLoadingRef.current;
+
+        if (prev && !createLoading) {
+            inputRef.current?.focus();
+
+            if (selectOnCreateFailRef.current) {
+                inputRef.current?.select();
+                selectOnCreateFailRef.current = false;
+            }
+        }
+
+        prevCreateLoadingRef.current = createLoading;
+    }, [createLoading]);
+
+    /* ---------- helpers ---------- */
+
+    const focusBackToEditedRow = () => {
+        const el = lastEditTriggerRef.current;
+        if (!el) return;
+
+        queueMicrotask(() => {
+            el.focus?.();
+        });
+    };
+
+    const focusFilterButtonByIndex = (index) => {
+        const root = filterListRef.current;
+        if (!root) return;
+
+        const buttons = root.querySelectorAll('button[role="tab"]');
+        const target = buttons[index];
+        target?.focus?.();
+    };
+
+    const handleFilterKeyDown = (e, currentIndex) => {
+        const key = e.key;
+        const total = FILTER_ITEMS.length;
+
+        const isNavKey =
+            key === "ArrowLeft" ||
+            key === "ArrowRight" ||
+            key === "Home" ||
+            key === "End";
+
+        if (!isNavKey) return;
+
+        e.preventDefault();
+
+        let nextIndex = currentIndex;
+
+        if (key === "ArrowLeft") nextIndex = (currentIndex - 1 + total) % total;
+        if (key === "ArrowRight") nextIndex = (currentIndex + 1) % total;
+        if (key === "Home") nextIndex = 0;
+        if (key === "End") nextIndex = total - 1;
+
+        const next = FILTER_ITEMS[nextIndex];
+        setFilter(next.value);
+        focusFilterButtonByIndex(nextIndex);
+    };
 
     /* ---------- handlers ---------- */
 
@@ -54,31 +139,72 @@ export default function TodoListView({ nickname, onSignOut }) {
 
         if (!ok) {
             setNewContent(content);
+            // 等 createLoading 結束後 focus 回來時順便全選
+            selectOnCreateFailRef.current = true;
         }
     };
 
-    const startEdit = (todo) => {
+    const startEdit = (todo, triggerEl) => {
         if (mutateLoading) return;
+
+        lastEditTriggerRef.current = triggerEl ?? null;
+
         setEditingId(todo.id);
         setEditingValue(todo.content);
+        editingOriginalRef.current = todo.content;
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setEditingValue("");
+        editingOriginalRef.current = "";
+        focusBackToEditedRow();
     };
 
     const commitEdit = async () => {
-        if (!editingId) return;
-        if (mutateLoading) return;
-        const ok = await editTodoContent(editingId, editingValue);
-        if (ok) cancelEdit();
+        if (commitLockRef.current) return;
+        commitLockRef.current = true;
+
+        try {
+            if (!editingId) return;
+            if (mutateLoading) return;
+
+            // 1) 編輯沒改就不送出（trim 後比對）
+            const next = editingValue.trim();
+            const prev = (editingOriginalRef.current ?? "").trim();
+            if (next === prev) {
+                setEditingId(null);
+                setEditingValue("");
+                editingOriginalRef.current = "";
+                focusBackToEditedRow();
+                return;
+            }
+
+            const ok = await editTodoContent(editingId, editingValue);
+
+            if (ok) {
+                setEditingId(null);
+                setEditingValue("");
+                editingOriginalRef.current = "";
+                focusBackToEditedRow();
+            } else {
+                // 失敗：仍維持編輯狀態，並把焦點拉回編輯框（純 UX）
+                queueMicrotask(() => {
+                    editInputRef.current?.focus?.();
+                });
+            }
+        } finally {
+            // 等事件迴圈結束後再解鎖，避免 Enter -> blur 連續觸發
+            queueMicrotask(() => {
+                commitLockRef.current = false;
+            });
+        }
     };
 
     /* ---------- render ---------- */
 
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${mutateLoading ? styles.isMutating : ""}`}>
             <header className={styles.header}>
                 <h1 className={styles.heading}>
                     <img src={logoImg} alt="" />
@@ -103,6 +229,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                 {/* 新增 */}
                 <form className={styles.form} onSubmit={handleCreate}>
                     <input
+                        ref={inputRef}
                         type="text"
                         placeholder="新增待辦事項"
                         className={styles.input}
@@ -114,6 +241,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                         type="submit"
                         className={styles.addButton}
                         disabled={createLoading}
+                        aria-disabled={createLoading}
                     >
                         <img src={addImg} alt="" />
                     </button>
@@ -135,11 +263,12 @@ export default function TodoListView({ nickname, onSignOut }) {
                         {/* 篩選 */}
                         <header className={styles.todoHeader}>
                             <ul
+                                ref={filterListRef}
                                 className={styles.filterList}
                                 role="tablist"
                                 aria-label="代辦事項篩選"
                             >
-                                {FILTER_ITEMS.map((item) => {
+                                {FILTER_ITEMS.map((item, idx) => {
                                     const isSelected = filter === item.value;
 
                                     return (
@@ -152,6 +281,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                 className={`${styles.filterButton} ${isSelected ? styles.isActive : ""
                                                     }`}
                                                 onClick={() => setFilter(item.value)}
+                                                onKeyDown={(e) => handleFilterKeyDown(e, idx)}
                                             >
                                                 {item.label}
                                             </button>
@@ -207,6 +337,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                 {/* 文字 / 編輯 */}
                                                 {isEditing ? (
                                                     <input
+                                                        ref={editInputRef}
                                                         className={styles.editInput}
                                                         value={editingValue}
                                                         autoFocus
@@ -217,8 +348,17 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                         onBlur={commitEdit}
                                                         onKeyDown={(e) => {
                                                             if (mutateLoading) return;
-                                                            if (e.key === "Enter") commitEdit();
-                                                            if (e.key === "Escape") cancelEdit();
+
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault();
+                                                                // 固定讓 Enter 走 blur -> onBlur(commitEdit) 的單一路徑
+                                                                e.currentTarget.blur();
+                                                                return;
+                                                            }
+
+                                                            if (e.key === "Escape") {
+                                                                cancelEdit();
+                                                            }
                                                         }}
                                                     />
                                                 ) : (
@@ -226,7 +366,8 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                         type="button"
                                                         className={styles.todoTextButton}
                                                         disabled={mutateLoading}
-                                                        onClick={() => startEdit(t)}
+                                                        aria-disabled={mutateLoading}
+                                                        onClick={(e) => startEdit(t, e.currentTarget)}
                                                     >
                                                         {t.content}
                                                     </button>
@@ -239,6 +380,7 @@ export default function TodoListView({ nickname, onSignOut }) {
                                                 className={styles.deleteButton}
                                                 aria-label="刪除代辦"
                                                 disabled={mutateLoading}
+                                                aria-disabled={mutateLoading}
                                                 onClick={() => removeTodo(t.id)}
                                             >
                                                 <img src={deleteImg} alt="" />
