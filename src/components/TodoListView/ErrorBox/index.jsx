@@ -14,6 +14,7 @@ export default function ErrorBox() {
                 type="button"
                 className={styles.retryButton}
                 onClick={refreshTodos}
+                disabled={loading}
             >
                 重試
             </button>
